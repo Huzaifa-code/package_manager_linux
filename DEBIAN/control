@@ -1,0 +1,9 @@
+Package: package-manager
+Version: 1.0
+Architecture: all
+Maintainer: Huzaifa Qureshi <developerhuzaifa@gmail.com>
+Description: Package Manager for Linux systems.
+ A tool to manage packages including searching, installing, and removing.
+Depends: yad (>= 0.40)
+Files:
+ usr/share/applications/package_manager.desktop
