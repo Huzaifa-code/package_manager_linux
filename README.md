@@ -1,4 +1,4 @@
-# Package Manager for Linux Systems
+# GUI Package Manager for Linux Systems
 
 This package manager is designed for Linux users who want a straightforward tool to manage system packages—making it easy to search for, install, and remove software packages from your Linux system.
 
