@@ -48,34 +48,6 @@ search_packages() {
   main_menu
 }
 
-# Install package
-# install_package() {
-
-#   package_name=$(yad --entry --title="Install Package" --text="Enter package name:" --center --width=300 )
-#   if [[ -n "$package_name" ]]; then
-#     # Use pkexec for apt install
-#     (
-#       # Capture the output of apt install command
-#       output=$(pkexec bash -c "apt install -y $package_name 2>&1")
-#       install_status=$?
-
-#       if [[ $install_status -eq 0 ]]; then
-#         yad --info --title="Package Management" --text="Package '$package_name' installed successfully.\n\n$output" --center
-#       else
-#         yad --error --title="Error" --text="Failed to install package '$package_name'.\n\n$output" --center
-#       fi
-#     ) &
-
-#     # Wait for the background process to finish
-#     wait
-
-#     # Show the main menu after the user closes the info or error dialog
-#     main_menu
-#   else
-#     # If user cancels the input dialog, return to main menu
-#     main_menu
-#   fi
-# }
 
 # Install package
 install_package() {
