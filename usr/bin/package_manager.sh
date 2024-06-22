@@ -13,7 +13,7 @@ main_menu() {
     --text="Select an action:" \
     --column="Select" --column="Action" \
     TRUE "Search Packages" FALSE "Install Package" FALSE "Remove Package" FALSE "List Installed Packages" FALSE "Exit" \
-    --width=400 --height=300 --center)
+    --width=300 --height=300 --center)
 
     case $user_choice in
     *"Search Packages"*)
@@ -29,19 +29,14 @@ main_menu() {
       list_installed_packages
       ;;
     *"Exit"*)
-      yad --info --title="Package Management" --text="Exiting..."
       exit 0
-      ;;
-    *)
-      yad --error --title="Error" --text="Invalid option selected."
-      main_menu
       ;;
   esac
 }
 
 # Search for packages
 search_packages() {
-  search_term=$(yad --entry --title="Search Packages" --text="Enter search term:" --center)
+  search_term=$(yad --entry --title="Search Packages" --text="Search Package name on Internet\nEnter search term:" --width=300 --height=100 --center)
   if [[ -n "$search_term" ]]; then
     package_list=$(apt-cache search "$search_term" 2>/dev/null)
     if [[ $? -eq 0 && -n "$package_list" ]]; then
@@ -53,44 +48,83 @@ search_packages() {
   main_menu
 }
 
-# Function to show loader dialog
-show_loader() {
-  (
-    sleep 0.5
-    echo "10"
-    sleep 0.5
-    echo "30"
-    sleep 0.5
-    echo "50"
-    sleep 0.5
-    echo "70"
-    sleep 0.5
-    echo "100"
-  ) | yad --progress --title="Processing" --text="Please wait..." --auto-close --pulsate --center
-}
+# Install package
+# install_package() {
+
+#   package_name=$(yad --entry --title="Install Package" --text="Enter package name:" --center --width=300 )
+#   if [[ -n "$package_name" ]]; then
+#     # Use pkexec for apt install
+#     (
+#       # Capture the output of apt install command
+#       output=$(pkexec bash -c "apt install -y $package_name 2>&1")
+#       install_status=$?
+
+#       if [[ $install_status -eq 0 ]]; then
+#         yad --info --title="Package Management" --text="Package '$package_name' installed successfully.\n\n$output" --center
+#       else
+#         yad --error --title="Error" --text="Failed to install package '$package_name'.\n\n$output" --center
+#       fi
+#     ) &
+
+#     # Wait for the background process to finish
+#     wait
+
+#     # Show the main menu after the user closes the info or error dialog
+#     main_menu
+#   else
+#     # If user cancels the input dialog, return to main menu
+#     main_menu
+#   fi
+# }
 
 # Install package
 install_package() {
-  package_name=$(yad --entry --title="Install Package" --text="Enter package name:" --center)
+  result=$(yad --form --title="Install Package" \
+    --text="\n<span size='larger'><b>Choose an option:</b></span>\n\ 
+      1. Browse .deb Packages\n \
+      2. Browse Snapcraft\n \
+      3. Browse Flathub\n\n \
+    or enter the package name to install directly:" \
+    --field="Browse Flathub:FBTN" "xdg-open https://flathub.org/" \
+    --field="Browse Snapcraft:FBTN" "xdg-open https://snapcraft.io/store" \
+    --field="Browse .deb Packages:FBTN" "xdg-open https://packages.ubuntu.com/" \
+    --field="Package Name" "" \
+    --center --width=400 --button="gtk-ok:0" --button="gtk-cancel:1 \
+    --html")
+
+  # Extract the package name
+  package_name=$(echo "$result" | awk -F '|' '{print $4}')
+
   if [[ -n "$package_name" ]]; then
-    # Use pkexec for apt install
-    (
-      # Capture the output of apt install command
-      output=$(pkexec bash -c "apt install -y $package_name 2>&1")
-      install_status=$?
+    if [[ "$result" =~ "Browse .deb Packages" ]]; then
+      xdg-open "https://packages.ubuntu.com/"
+      install_package
+    elif [[ "$result" =~ "Browse Snapcraft" ]]; then
+      xdg-open "https://snapcraft.io/store"
+      install_package
+    elif [[ "$result" =~ "Browse Flathub" ]]; then
+      xdg-open "https://flathub.org/"
+      install_package
+    else
+      # Use pkexec for apt install
+      (
+        # Capture the output of apt install command
+        output=$(pkexec bash -c "apt install -y $package_name 2>&1")
+        install_status=$?
 
-      if [[ $install_status -eq 0 ]]; then
-        yad --info --title="Package Management" --text="Package '$package_name' installed successfully.\n\n$output" --center
-      else
-        yad --error --title="Error" --text="Failed to install package '$package_name'.\n\n$output" --center
-      fi
-    ) &
+        if [[ $install_status -eq 0 ]]; then
+          yad --info --title="Package Management" --text="Package '$package_name' installed successfully.\n\n$output" --center
+        else
+          yad --error --title="Error" --text="Failed to install package '$package_name'.\n\n$output" --center
+        fi
+      ) &
 
-    # Wait for the background process to finish
-    wait
+      # Wait for the background process to finish
+      wait
 
-    # Show the main menu after the user closes the info or error dialog
-    main_menu
+      # Show the main menu after the user closes the info or error dialog
+      main_menu
+    fi
   else
     # If user cancels the input dialog, return to main menu
     main_menu
@@ -177,9 +211,6 @@ remove_package() {
     # After handling one removal, continue to allow removing more packages
   done
 }
-
-
-
 
 # List all installed packages
 list_installed_packages() {
