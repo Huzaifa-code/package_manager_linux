@@ -2,6 +2,8 @@
 
 This package manager is designed for Linux users who want a straightforward tool to manage system packages—making it easy to search for, install, and remove software packages from your Linux system.
 
+![](package_manager.gif)
+
 ### Features:
 - **User-Friendly Interface:** Simplifies package management tasks for new and experienced Linux users alike.
 - **Search and Install:** Quickly find and install software packages from your Linux distribution's repositories.
@@ -19,5 +21,3 @@ To start using the package manager:
 ### Contributions:
 Contributions and feedback are welcome! If you encounter issues or have suggestions for improvements, please [open an issue](https://github.com/Huzaifa-code/package_manager_linux/issues) or [submit a pull request](https://github.com/Huzaifa-code/package_manager_linux/pulls).
 
-### Why Choose Linux ?
-Linux provides a robust and customizable environment for computing needs, offering stability, security, and a wide range of software options through package management systems like this one.
